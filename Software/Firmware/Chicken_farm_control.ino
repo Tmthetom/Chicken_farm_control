@@ -53,7 +53,7 @@ byte lineDesign[8] = {
 	B00100,
 	B00100,
 	B00100,
-	B00100 
+	B00100
 };
 #pragma endregion
 
@@ -65,7 +65,7 @@ byte lineDesign[8] = {
 int encoderLastValue = LOW;  // Poslední hodnota encoderu
 int encoderCurrentValue = LOW;  // Aktuální hodnota encoderu
 
-/* Nastavení hygrometru (teplota a vlkost) */
+								/* Nastavení hygrometru (teplota a vlkost) */
 
 AM2320 hygrometer;
 
@@ -76,7 +76,7 @@ AM2320 hygrometer;
 unsigned long previousMillis = 0;  // Pøedchozí poèet milisekund
 unsigned long currentMillis;  // Aktuální poèet milisekund
 
-/* Nastavení editace menu */
+							  /* Nastavení editace menu */
 
 #define menuNotSelected -1  // Žádné menu nevybráno
 #define menuTemperature 0  // Èíslo menu
@@ -95,7 +95,7 @@ bool isEditedMenuVisible = true;  // Je editované menu viditelné?
 // TODO: Displej se nepøekresluje, pouze vìci pøepisujeme. Bylo by dobré statické texty vykreslit pouze jednou.
 
 /* Nastavení pøed prvním spuštìním */
-void setup(){
+void setup() {
 
 	// Nastavení periferií
 	pinMode(heater, OUTPUT);
@@ -107,7 +107,7 @@ void setup(){
 	pinMode(encoderPinA, INPUT);  // Nastavení pinu encoderu jako vstupu
 	pinMode(encoderPinB, INPUT);  // Nastavení pinu encoderu jako vstupu
 
-	// Nastavení displeje
+								  // Nastavení displeje
 	lcd.begin(lcdColumns, lcdRows);  // Nastavení rozlišení displeje
 	lcd.createChar(0, degreeDesign);  // Vytvoøení nového znaku displeje
 	lcd.write(byte(0));  // Pøidání nového znaku do pamìti displeje
@@ -116,7 +116,7 @@ void setup(){
 }
 
 /* Hlavní program */
-void loop(){
+void loop() {
 	measure();  // Zmìø aktuální hodnoty
 	checkForMenuEdit();  // Pohyb v editaèním menu
 	showMenu();  // Vykreslí menu
@@ -132,7 +132,7 @@ void measure() {
 
 	// Pokud je menu editováno, odejdi
 	if (editedMenu != menuNotSelected) return;
-	
+
 	// Mìøení aktuálních hodnot
 	hygrometer.measure();
 }
@@ -152,22 +152,22 @@ void checkForMenuEdit() {
 	if (currentButtonState == LOW && lastButtonState == HIGH) {
 		switch (editedMenu) {
 
-		// Editace teploty
+			// Editace teploty
 		case menuNotSelected:  // Aktuálnì needitujeme žádné menu
 			editedMenu = menuTemperature;  // Jdeme editovat teplotu
 			break;
 
-		// Editace vlhkosti
+			// Editace vlhkosti
 		case menuTemperature:  // Aktuálnì editujeme teplotu
 			editedMenu = menuHumidity;  // Jdeme editovat vlhkost
 			break;
 
-		// Editace dnù
+			// Editace dnù
 		case menuHumidity:  // Aktuálnì editujeme vlhkost
 			editedMenu = menuDays;  // Jdeme editovat dny
 			break;
 
-		// Konec editace
+			// Konec editace
 		case menuDays:  // Aktuálnì editujeme dny
 			editedMenu = menuNotSelected;  // Konèíme s editací
 			isEditedMenuVisible = true;
@@ -222,7 +222,7 @@ void printTemperature() {
 	lcdPrint(positionActualValue, rowOne, readTemperature());  // Namìøená hodnota
 	lcdPrint(positionUnit, rowOne, (char)0);  // Znak stupnì celsia
 
-	// Pøednastavená hodnota
+											  // Pøednastavená hodnota
 	if (editedMenu != menuTemperature) {  // Pokud toto menu není zrovna editováno
 		lcdPrint(positionSetValue, rowOne, setTemperature);  // Pøednastavená hodnota
 		return;  // Konec vykreslení
@@ -243,7 +243,7 @@ void printTemperature() {
 			isEditedMenuVisible = true;
 		}
 	}
-	
+
 	// Nastavování pøednastavené hodnoty pomocí potenciometru
 	setTemperature += readEncoder();
 }
@@ -256,7 +256,7 @@ void printHumidity() {
 	lcdPrint(positionActualValue, rowTwo, readHumidity());  // Namìøená hodnota
 	lcdPrint(positionUnit, rowTwo, "%");  // Znak procent
 
-	// Pøednastavená hodnota
+										  // Pøednastavená hodnota
 	if (editedMenu != menuHumidity) {  // Pokud toto menu není zrovna editováno
 		lcdPrint(positionSetValue, rowTwo, setHumidity);  // Pøednastavená hodnota
 		return;  // Konec vykreslení
@@ -287,12 +287,12 @@ void printDay() {
 
 	// Název øádku
 	lcdPrint(positionText, rowThree, "DAY");
-	
+
 	// Poèetní dní od zapnutí
 	if (setDays < 10) lcdPrint(positionActualValue + 1, rowThree, getDaysFromStart());  // Jednotky
 	else lcdPrint(positionActualValue, rowThree, getDaysFromStart());  // Desítky
 
-	// Nastavený poèet dní
+																	   // Nastavený poèet dní
 	if (editedMenu != menuDays) {  // Pokud toto menu není zrovna editováno
 		if (setDays < 10) lcdPrint(positionSetValue + 1, rowThree, setDays);  // Jednotky
 		else lcdPrint(positionSetValue, rowThree, setDays);  // Desítky
@@ -380,7 +380,7 @@ void lcdPrint(int column, int row, char value) {
 void control() {
 
 	// Reguluje
-	if (getDaysFromStart() <= setDays){
+	if (getDaysFromStart() <= setDays) {
 
 		// Topení
 		if (readTemperature() < setTemperature) digitalWrite(heater, HIGH);  // Topí
