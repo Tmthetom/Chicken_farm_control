@@ -104,7 +104,7 @@ void setup(){
 	pinMode(button, INPUT_PULLUP);
 
 	// Nastavení hygrometru
-	Wire.begin();  // Inicializace I2C pro AM2320
+	hygrometer.begin();  // Inicializace I2C pro AM2320
 	pinMode(encoderPinA, INPUT);  // Nastavení pinu encoderu jako vstupu
 	pinMode(encoderPinB, INPUT);  // Nastavení pinu encoderu jako vstupu
 
