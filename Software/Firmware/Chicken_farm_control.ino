@@ -286,7 +286,7 @@ void printHumidity() {
 void printDay() {
 
 	// Název øádku
-	lcdPrint(positionText, rowThree, "DAY");
+	lcdPrint(positionText, rowThree, "DAYS");
 
 	// Poèetní dní od zapnutí
 	if (setDays < 10) lcdPrint(positionActualValue + 1, rowThree, getDaysFromStart());  // Jednotky
