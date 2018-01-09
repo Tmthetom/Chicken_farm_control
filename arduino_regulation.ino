@@ -2,7 +2,6 @@
 
 /* Knihovny */
 
-#include <Wire.h>
 #include <AM2320.h>  // https://github.com/hibikiledo/AM2320
 #include <LiquidCrystal.h>
 
