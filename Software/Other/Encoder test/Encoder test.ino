@@ -7,6 +7,8 @@ int readedValue;  // Hodnota pøeètená z encoderu
 int encoderLastValue = LOW;  // Poslední hodnota encoderu
 int encoderCurrentValue = LOW;  // Aktuální hodnota encoderu
 
+int value = 200;
+
 /* Nastavení pøed prvním spuštìním */
 void setup()
 {
@@ -17,11 +19,17 @@ void setup()
 void loop()
 {
 	readedValue = readEncoder();  // Pøeètení hodnoty z encoderu
+	value += readedValue;
 
-	if (readedValue == 1) Serial.println("Zmìna: +1");  // Vypiš zmìny potenciometru
-	else if (readedValue == -1) Serial.println("Zmìna: -1");  // Vypiš zmìny potenciometru
+	if (readedValue == 1) {
+		Serial.print(value);
+		Serial.println(" [ + 1]");
+	}
 
-	readedValue = 0;
+	else if (readedValue == -1) {
+		Serial.print(value);
+		Serial.println(" [ - 1]");
+	}
 }
 
 /* Pøeète hodnotu z encoderu a vrací hodnotu posunu */
@@ -29,6 +37,7 @@ void loop()
 int readEncoder() {
 	encoderCurrentValue = digitalRead(encoderPinA);
 	if ((encoderLastValue == LOW) && (encoderCurrentValue == HIGH)) {
+		encoderLastValue = encoderCurrentValue;
 		if (digitalRead(encoderPinB) == LOW) return -1;
 		else return 1;
 	}

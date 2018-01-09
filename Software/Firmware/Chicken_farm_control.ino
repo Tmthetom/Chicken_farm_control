@@ -321,12 +321,12 @@ void printDay() {
 }
 
 /* Pøeète a vrátí hodnotu teplomìøu */
-int readTemperature() {
+float readTemperature() {
 	return hygrometer.getTemperature();
 }
 
 /* Pøeète a vrátí hodnotu vlhkomìru */
-int readHumidity() {
+float readHumidity() {
 	return hygrometer.getHumidity();
 }
 
@@ -340,6 +340,7 @@ int getDaysFromStart() {
 int readEncoder() {
 	encoderCurrentValue = digitalRead(encoderPinA);
 	if ((encoderLastValue == LOW) && (encoderCurrentValue == HIGH)) {
+		encoderLastValue = encoderCurrentValue;
 		if (digitalRead(encoderPinB) == LOW) return -1;
 		else return 1;
 	}
@@ -365,6 +366,9 @@ void lcdPrint(int column, int row, String text) {
 	lcd.print(text);
 }
 void lcdPrint(int column, int row, int value) {
+	lcdPrint(column, row, String(value));
+}
+void lcdPrint(int column, int row, float value) {
 	lcdPrint(column, row, String(value));
 }
 void lcdPrint(int column, int row, char value) {
