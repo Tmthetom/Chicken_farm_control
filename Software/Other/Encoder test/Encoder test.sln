@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Chicken_farm_control", "Chicken_farm_control.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Encoder test", "Encoder test.vcxproj", "{E5270259-F30E-4407-9C70-E5C7132128F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
-		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{E5270259-F30E-4407-9C70-E5C7132128F5}.Debug|x86.ActiveCfg = Debug|Win32
+		{E5270259-F30E-4407-9C70-E5C7132128F5}.Debug|x86.Build.0 = Debug|Win32
+		{E5270259-F30E-4407-9C70-E5C7132128F5}.Release|x86.ActiveCfg = Release|Win32
+		{E5270259-F30E-4407-9C70-E5C7132128F5}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {9F6FF0B0-698C-4A98-A1EE-C7D7BF4A8541}
+		SolutionGuid = {D2AE0764-01AB-4C6F-85A3-7417D7D54EC8}
 	EndGlobalSection
 EndGlobal

@@ -65,7 +65,7 @@ byte lineDesign[8] = {
 int encoderLastValue = LOW;  // Poslední hodnota encoderu
 int encoderCurrentValue = LOW;  // Aktuální hodnota encoderu
 
-								/* Nastavení hygrometru (teplota a vlkost) */
+/* Nastavení hygrometru (teplota a vlkost) */
 
 AM2320 hygrometer;
 
@@ -76,7 +76,7 @@ AM2320 hygrometer;
 unsigned long previousMillis = 0;  // Pøedchozí poèet milisekund
 unsigned long currentMillis;  // Aktuální poèet milisekund
 
-							  /* Nastavení editace menu */
+/* Nastavení editace menu */
 
 #define menuNotSelected -1  // Žádné menu nevybráno
 #define menuTemperature 0  // Èíslo menu
