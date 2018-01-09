@@ -70,6 +70,11 @@ AM2320 hygrometer;
 /* Nastavení pøed prvním spuštìním */
 void setup(){
 
+	// Nastavení periferií
+	pinMode(heater, OUTPUT);
+	pinMode(fan, OUTPUT);
+	pinMode(button, INPUT_PULLUP);
+
 	// Nastavení hygrometru
 	Wire.begin();  // Inicializace I2C pro AM2320
 	pinMode(encoderPinA, INPUT);  // Nastavení pinu encoderu jako vstupu
