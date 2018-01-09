@@ -10,6 +10,12 @@
 #define setHumidity 80
 #define setDays 23
 
+/* Nastavení periferií */
+
+#define button 2
+#define heater 13
+#define fan 10
+
 /* Nastavení displeje */
 
 LiquidCrystal lcd(A0, A1, A2, 5, A3, 4);  // Piny displeje
@@ -79,10 +85,28 @@ void setup(){
 
 /* Hlavní program */
 void loop(){
+	//handleButton();
 	showMenu();
-
+	control();
 }
 
+#pragma region Handle Button
+
+/* Pøeète hodnotu z encoderu a vrací hodnotu posunu */
+/* 1 = Zvýšení, -1 = Zmenšení, 0 = Bez zmìny */
+int readEncoder() {
+	encoderCurrentValue = digitalRead(encoderPinA);
+	if ((encoderLastValue == LOW) && (encoderCurrentValue == HIGH)) {
+		if (digitalRead(encoderPinB) == LOW) return -1;
+		else return 1;
+	}
+	encoderLastValue = encoderCurrentValue;
+	return 0;
+}
+
+#pragma endregion
+
+#pragma region Show Menu
 
 /* Vykreslení menu */
 void showMenu() {
@@ -133,21 +157,17 @@ void printHumidity() {
 
 /* Vykreslí èas */
 void printDay() {
-	lcdPrint(positionText, rowThree, "DAY");  // Název øádku
-	lcdPrint(positionActualValue, rowThree, getDaysFromStart());  // Poèetní dní od zapnutí
-	lcdPrint(positionSetValue, rowThree, setDays);  // Maximální poèet dní
-}
 
-/* Pøeète hodnotu z encoderu a vrací hodnotu posunu */
-/* 1 = Zvýšení, -1 = Zmenšení, 0 = Bez zmìny */
-int readEncoder() {
-	encoderCurrentValue = digitalRead(encoderPinA);
-	if ((encoderLastValue == LOW) && (encoderCurrentValue == HIGH)) {
-		if (digitalRead(encoderPinB) == LOW) return -1;
-		else return 1;
-	}
-	encoderLastValue = encoderCurrentValue;
-	return 0;
+	// Název øádku
+	lcdPrint(positionText, rowThree, "DAY");
+	
+	// Poèetní dní od zapnutí
+	if (setDays < 10) lcdPrint(positionActualValue + 1, rowThree, getDaysFromStart());  // Jednotky
+	else lcdPrint(positionActualValue, rowThree, getDaysFromStart());  // Desítky
+
+	// Nastavený poèet dní
+	if (setDays < 10) lcdPrint(positionSetValue + 1, rowThree, setDays);  // Jednotky
+	else lcdPrint(positionSetValue, rowThree, setDays);  // Desítky
 }
 
 /* Pøeète a vrátí hodnotu teplomìøu */
@@ -173,3 +193,31 @@ void lcdPrint(int column, int row, String text) {
 void lcdPrint(int column, int row, int value) {
 	lcdPrint(column, row, String(value));
 }
+
+#pragma endregion
+
+#pragma region Control
+
+/* Ovládání periferií na základì mìøení */
+void control() {
+
+	// Reguluje
+	if (getDaysFromStart() <= setDays){
+
+		// Topení
+		if (readTemperature() < setTemperature) digitalWrite(heater, HIGH);  // Topí
+		else digitalWrite(heater, LOW);  // Netopí
+
+		// Vìtrání
+		if (readHumidity() < setHumidity) digitalWrite(fan, HIGH);  // Vìtrá
+		else digitalWrite(fan, LOW);  // Nevìtrá
+	}
+
+	// Nereguluje (poèet dní pøesažen)
+	else {
+		digitalWrite(heater, LOW);  // Netopí
+		digitalWrite(fan, LOW);  // Nevìtrá
+	}
+}
+
+#pragma endregion
