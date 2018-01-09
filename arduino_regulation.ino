@@ -367,6 +367,10 @@ void lcdPrint(int column, int row, String text) {
 void lcdPrint(int column, int row, int value) {
 	lcdPrint(column, row, String(value));
 }
+void lcdPrint(int column, int row, char value) {
+	lcd.setCursor(column, row);
+	lcd.print(value);
+}
 
 #pragma endregion
 
