@@ -1,14 +1,16 @@
+#pragma region Inicializace a nastavení
+
 /* Knihovny */
 
 #include <Wire.h>
-#include <AM2320.h>
+#include <AM2320.h>  // https://github.com/hibikiledo/AM2320
 #include <LiquidCrystal.h>
 
 /* Nastavení pøeddefinovaných hodnot */
 
-#define setTemperature 38
-#define setHumidity 80
-#define setDays 23
+int setTemperature = 38;
+int setHumidity = 80;
+int setDays = 23;
 
 /* Nastavení periferií */
 
@@ -60,12 +62,38 @@ byte lineDesign[8] = {
 
 #define encoderPinA 9  // Pin encoderu A
 #define encoderPinB 3  // Pin encoderu B
+
 int encoderLastValue = LOW;  // Poslední hodnota encoderu
 int encoderCurrentValue = LOW;  // Aktuální hodnota encoderu
 
 /* Nastavení hygrometru (teplota a vlkost) */
 
 AM2320 hygrometer;
+
+/* Nastavení blikání */
+
+#define blinkInterval 200  // Blink in milliseconds
+
+unsigned long previousMillis = 0;  // Pøedchozí poèet milisekund
+unsigned long currentMillis;  // Aktuální poèet milisekund
+
+/* Nastavení editace menu */
+
+#define menuNotSelected -1  // Žádné menu nevybráno
+#define menuTemperature 0  // Èíslo menu
+#define menuHumidity 1  // Èíslo menu
+#define menuDays 2  // Èíslo menu
+
+int editedMenu = menuNotSelected;  // Aktuálnì nastavované menu
+int lastButtonState = LOW;  // Poslední stav tlaèítka
+int currentButtonState;  // Aktuální stav tlaèítka
+char emptyValue[] = "  ";  // Prázdná hodnota pøi blikání
+bool isEditedMenuVisible = true;  // Je editované menu viditelné?
+
+#pragma endregion
+
+#pragma region Hlavní program
+// TODO: Displej se nepøekresluje, pouze vìci pøepisujeme. Bylo by dobré statické texty vykreslit pouze jednou.
 
 /* Nastavení pøed prvním spuštìním */
 void setup(){
@@ -90,23 +118,66 @@ void setup(){
 
 /* Hlavní program */
 void loop(){
-	//handleButton();
-	showMenu();
-	control();
+	measure();  // Zmìø aktuální hodnoty
+	checkForMenuEdit();  // Pohyb v editaèním menu
+	showMenu();  // Vykreslí menu
+	control();  // Ovládání periferií na základì mìøení
 }
 
-#pragma region Handle Button
+#pragma endregion
 
-/* Pøeète hodnotu z encoderu a vrací hodnotu posunu */
-/* 1 = Zvýšení, -1 = Zmenšení, 0 = Bez zmìny */
-int readEncoder() {
-	encoderCurrentValue = digitalRead(encoderPinA);
-	if ((encoderLastValue == LOW) && (encoderCurrentValue == HIGH)) {
-		if (digitalRead(encoderPinB) == LOW) return -1;
-		else return 1;
+#pragma region Measure
+
+/* Zmìø aktuální hodnoty */
+void measure() {
+
+	// Pokud je menu editováno, odejdi
+	if (editedMenu != menuNotSelected) return;
+	
+	// Mìøení aktuálních hodnot
+	hygrometer.measure();
+}
+
+#pragma endregion
+
+#pragma region Read Button
+
+/* Pohyb v editaèním menu */
+void checkForMenuEdit() {
+	// TODO: Ošetøení zákmitu tlaèítka (Debounce)
+
+	// Naètení aktuálního stavu tlaèítka
+	currentButtonState = digitalRead(button);
+
+	// Tlaèítko zmáèknuté
+	if (currentButtonState == LOW && lastButtonState == HIGH) {
+		switch (editedMenu) {
+
+		// Editace teploty
+		case menuNotSelected:  // Aktuálnì needitujeme žádné menu
+			editedMenu = menuTemperature;  // Jdeme editovat teplotu
+			break;
+
+		// Editace vlhkosti
+		case menuTemperature:  // Aktuálnì editujeme teplotu
+			editedMenu = menuHumidity;  // Jdeme editovat vlhkost
+			break;
+
+		// Editace dnù
+		case menuHumidity:  // Aktuálnì editujeme vlhkost
+			editedMenu = menuDays;  // Jdeme editovat dny
+			break;
+
+		// Konec editace
+		case menuDays:  // Aktuálnì editujeme dny
+			editedMenu = menuNotSelected;  // Konèíme s editací
+			isEditedMenuVisible = true;
+			break;
+		}
 	}
-	encoderLastValue = encoderCurrentValue;
-	return 0;
+
+	// Aktualizace starého stavu
+	lastButtonState = currentButtonState;
 }
 
 #pragma endregion
@@ -146,18 +217,70 @@ void printHeaderText() {
 
 /* Vykreslí teplotu */
 void printTemperature() {
+
+	// Vykreslení zaèátku øádku
 	lcdPrint(positionText, rowOne, "TEMP");  // Název øádku
 	lcdPrint(positionActualValue, rowOne, readTemperature());  // Namìøená hodnota
 	lcdPrint(positionUnit, rowOne, (char)0);  // Znak stupnì celsia
-	lcdPrint(positionSetValue, rowOne, setTemperature);  // Pøednastavená hodnota
+
+	// Pøednastavená hodnota
+	if (editedMenu != menuTemperature) {  // Pokud toto menu není zrovna editováno
+		lcdPrint(positionSetValue, rowOne, setTemperature);  // Pøednastavená hodnota
+		return;  // Konec vykreslení
+	}
+
+	// Blikání pøenastavované hodnoty
+	if (isBlinkTime()) {
+
+		// Zhasnutí hodnoty
+		if (isEditedMenuVisible) {
+			lcdPrint(positionSetValue, rowOne, emptyValue);  // Prázdná hodnota 
+			isEditedMenuVisible = false;
+		}
+
+		// Ukázaní hodnoty
+		else {
+			lcdPrint(positionSetValue, rowOne, setTemperature);  // Pøednastavená hodnota
+			isEditedMenuVisible = true;
+		}
+	}
+	
+	// Nastavování pøednastavené hodnoty pomocí potenciometru
+	setTemperature += readEncoder();
 }
 
 /* Vykreslí vlhkost */
 void printHumidity() {
+
+	// Vykreslení zaèátku øádku
 	lcdPrint(positionText, rowTwo, "HUMI");  // Název øádku
 	lcdPrint(positionActualValue, rowTwo, readHumidity());  // Namìøená hodnota
 	lcdPrint(positionUnit, rowTwo, "%");  // Znak procent
-	lcdPrint(positionSetValue, rowTwo, setHumidity);  // Pøednastavená hodnota
+
+	// Pøednastavená hodnota
+	if (editedMenu != menuHumidity) {  // Pokud toto menu není zrovna editováno
+		lcdPrint(positionSetValue, rowTwo, setHumidity);  // Pøednastavená hodnota
+		return;  // Konec vykreslení
+	}
+
+	// Blikání pøenastavované hodnoty
+	if (isBlinkTime()) {
+
+		// Zhasnutí hodnoty
+		if (isEditedMenuVisible) {
+			lcdPrint(positionSetValue, rowTwo, emptyValue);  // Prázdná hodnota 
+			isEditedMenuVisible = false;
+		}
+
+		// Ukázaní hodnoty
+		else {
+			lcdPrint(positionSetValue, rowTwo, setHumidity);  // Pøednastavená hodnota
+			isEditedMenuVisible = true;
+		}
+	}
+
+	// Nastavování pøednastavené hodnoty pomocí potenciometru
+	setHumidity += readEncoder();  // Zmìna vybraného menu
 }
 
 /* Vykreslí èas */
@@ -171,8 +294,31 @@ void printDay() {
 	else lcdPrint(positionActualValue, rowThree, getDaysFromStart());  // Desítky
 
 	// Nastavený poèet dní
-	if (setDays < 10) lcdPrint(positionSetValue + 1, rowThree, setDays);  // Jednotky
-	else lcdPrint(positionSetValue, rowThree, setDays);  // Desítky
+	if (editedMenu != menuDays) {  // Pokud toto menu není zrovna editováno
+		if (setDays < 10) lcdPrint(positionSetValue + 1, rowThree, setDays);  // Jednotky
+		else lcdPrint(positionSetValue, rowThree, setDays);  // Desítky
+		return;  // Konec vykreslení
+	}
+
+	// Blikání pøenastavované hodnoty
+	if (isBlinkTime()) {
+
+		// Zhasnutí hodnoty
+		if (isEditedMenuVisible) {
+			lcdPrint(positionSetValue, rowThree, emptyValue);  // Prázdná hodnota 
+			isEditedMenuVisible = false;
+		}
+
+		// Ukázaní hodnoty
+		else {
+			if (setDays < 10) lcdPrint(positionSetValue + 1, rowThree, setDays);  // Jednotky
+			else lcdPrint(positionSetValue, rowThree, setDays);  // Desítky
+			isEditedMenuVisible = true;
+		}
+	}
+
+	// Nastavování pøednastavené hodnoty pomocí potenciometru
+	setDays += readEncoder();  // Zmìna vybraného menu
 }
 
 /* Pøeète a vrátí hodnotu teplomìøu */
@@ -188,6 +334,30 @@ int readHumidity() {
 /* Vrátí poèet dní od startu programu */
 int getDaysFromStart() {
 	return (millis() / 1000 * 43200) / 84400;
+}
+
+/* Pøeète hodnotu z encoderu a vrací hodnotu posunu */
+/* 1 = Zvýšení, -1 = Zmenšení, 0 = Bez zmìny */
+int readEncoder() {
+	encoderCurrentValue = digitalRead(encoderPinA);
+	if ((encoderLastValue == LOW) && (encoderCurrentValue == HIGH)) {
+		if (digitalRead(encoderPinB) == LOW) return -1;
+		else return 1;
+	}
+	encoderLastValue = encoderCurrentValue;
+	return 0;
+}
+
+/* Je èas bliknout hodnotou v menu? */
+bool isBlinkTime() {
+	currentMillis = millis();
+
+	if (currentMillis - previousMillis >= blinkInterval) {  // Nastal èas
+		previousMillis = currentMillis;  // Pøepíšeme èas posledního blinkutí
+		return true;  // Oznámíme že je èas na bliknutí
+	}
+
+	return false;  // Oznámíme že není èas na bliknutí
 }
 
 /* Vypsání textu na displej s urèitou pozicí */
