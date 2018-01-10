@@ -332,6 +332,7 @@ float readHumidity() {
 
 /* Vrátí poèet dní od startu programu */
 int getDaysFromStart() {
+	// TODO: Value is not actually days from start, but something like minutes, need to be changed...
 	return (millis() / 1000 * 43200) / 84400;
 }
 
