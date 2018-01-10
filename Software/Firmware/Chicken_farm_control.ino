@@ -27,6 +27,8 @@ int setDays = 23;  // Maximální poèet dní, které mùže zaøízení bìžet
 #define button 2  // Tlaèítko pro ovládání menu
 #define heater 13  // Topení pro ohøívání kurníku
 #define fan 10  // Vìtrák pro ochlazování kurníku
+#define ledEdit 11  // Kontrolní dioda, ukazující aktivní editaci menu
+#define ledFinished 12  // Kontrolní dioda, ukazující dokonèení programu (pøesažení maximálních dnù)
 
 /* Nastavení displeje */
 
@@ -112,9 +114,11 @@ bool isEditedMenuVisible = true;  // Je editované menu viditelné?
 void setup() {
 
 	// Nastavení periferií
-	pinMode(heater, OUTPUT);
-	pinMode(fan, OUTPUT);
-	pinMode(button, INPUT_PULLUP);
+	pinMode(button, INPUT_PULLUP);  // Tlaèítko pro ovládání menu
+	pinMode(heater, OUTPUT);  // Topení pro ohøívání kurníku
+	pinMode(fan, OUTPUT);  // Vìtrák pro ochlazování kurníku
+	pinMode(ledEdit, OUTPUT);  // Kontrolní dioda, ukazující aktivní editaci menu
+	pinMode(ledFinished, OUTPUT);  // Kontrolní dioda, ukazující dokonèení programu (pøesažení maximálních dnù)
 
 	// Nastavení hygrometru
 	hygrometer.begin();  // Inicializace I2C pro AM2320
@@ -166,25 +170,27 @@ void checkForMenuEdit() {
 	if (currentButtonState == LOW && lastButtonState == HIGH) {
 		switch (editedMenu) {
 
-			// Editace teploty
+		// Editace teploty
 		case menuNotSelected:  // Aktuálnì needitujeme žádné menu
 			editedMenu = menuTemperature;  // Jdeme editovat teplotu
+			digitalWrite(ledEdit, HIGH);  // Zapnutí signalizaèní diody editace
 			break;
 
-			// Editace vlhkosti
+		// Editace vlhkosti
 		case menuTemperature:  // Aktuálnì editujeme teplotu
 			editedMenu = menuHumidity;  // Jdeme editovat vlhkost
 			break;
 
-			// Editace dnù
+		// Editace dnù
 		case menuHumidity:  // Aktuálnì editujeme vlhkost
 			editedMenu = menuDays;  // Jdeme editovat dny
 			break;
 
-			// Konec editace
+		// Konec editace
 		case menuDays:  // Aktuálnì editujeme dny
 			editedMenu = menuNotSelected;  // Konèíme s editací
-			isEditedMenuVisible = true;
+			isEditedMenuVisible = true;  // Pokud ukonèíme editaci, upravované hodnoty jsou vždy viditelné
+			digitalWrite(ledEdit, LOW);  // Vypnutí signalizaèní diody editace
 			break;
 		}
 	}
