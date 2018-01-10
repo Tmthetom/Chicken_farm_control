@@ -11,6 +11,17 @@ int setTemperature = 38;  // Ideální teplota
 int setHumidity = 80;  // Ideální vlhkost
 int setDays = 23;  // Maximální poèet dní, které mùže zaøízení bìžet
 
+/* Nastavení maximálních a minimálních hodnot */
+
+#define setTemperatureMinimum 18  // Nejmenší možná teplota
+#define setTemperatureMaximum 45  // Maximální možná teplota
+
+#define setHumidityMinimum 20  // Nejmenší možná vlhkost
+#define setHumidityMaximum 85  // Maximální možná vlhkost
+
+#define setDaysMinimum 0  // Nelze mít záporný poèet dnù, proto tedy 0
+#define setDaysMaximum 48  // Milis() dokáže poskytnut maximálnì 49,71026961805556 dní, poté pøeteèe
+
 /* Nastavení pinù periferií */
 
 #define button 2  // Tlaèítko pro ovládání menu
@@ -192,7 +203,7 @@ void showMenu() {
 	printHeaderText();  // Hlavièka
 	printTemperature();  // Teplota
 	printHumidity();  // Vlhkost
-	printDay();  // Dny
+	printDays();  // Dny
 }
 
 /* Vykreslí oddìlovací èáry */
@@ -249,6 +260,10 @@ void printTemperature() {
 
 	// Nastavování pøednastavené hodnoty pomocí potenciometru
 	setTemperature += readEncoder();
+
+	// Ošetøení minimální a maximální hodnoty
+	if (setTemperature < setTemperatureMinimum) setTemperature = setTemperatureMinimum;  // Minimální hodnota
+	else if (setTemperature > setTemperatureMaximum) setTemperature = setTemperatureMaximum;  // Maximálná hodnota
 }
 
 /* Vykreslí vlhkost */
@@ -282,11 +297,15 @@ void printHumidity() {
 	}
 
 	// Nastavování pøednastavené hodnoty pomocí potenciometru
-	setHumidity += readEncoder();  // Zmìna vybraného menu
+	setHumidity += readEncoder();
+
+	// Ošetøení minimální a maximální hodnoty
+	if (setHumidity < setHumidityMinimum) setHumidity = setHumidityMinimum;  // Minimální hodnota
+	else if (setHumidity > setHumidityMaximum) setHumidity = setHumidityMaximum;  // Maximálná hodnota
 }
 
 /* Vykreslí èas */
-void printDay() {
+void printDays() {
 
 	// Název øádku
 	lcdPrint(positionText, rowThree, "DAYS");
@@ -320,7 +339,11 @@ void printDay() {
 	}
 
 	// Nastavování pøednastavené hodnoty pomocí potenciometru
-	setDays += readEncoder();  // Zmìna vybraného menu
+	setDays += readEncoder();
+
+	// Ošetøení minimální a maximální hodnoty
+	if (setDays < setDaysMinimum) setDays = setDaysMinimum;  // Minimální hodnota
+	else if (setDays > setDaysMaximum) setDays = setDaysMaximum;  // Maximálná hodnota
 }
 
 /* Pøeète a vrátí hodnotu teplomìøu */
