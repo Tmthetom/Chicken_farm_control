@@ -437,12 +437,17 @@ void control() {
 		// Vìtrání
 		if (readHumidity() < setHumidity) digitalWrite(fan, HIGH);  // Vìtrá
 		else digitalWrite(fan, LOW);  // Nevìtrá
+
+		// Pokud byla prodloužena životnost programu, zvìtšením
+		// maximálního poètu dní, resetujeme signalizaèní diodu
+		if (digitalRead(ledFinished) == HIGH) digitalWrite(ledFinished, LOW);
 	}
 
-	// Nereguluje (poèet dní pøesažen)
+	// Nereguluje (poèet dní pøesažen - program ukonèen)
 	else {
 		digitalWrite(heater, LOW);  // Netopí
 		digitalWrite(fan, LOW);  // Nevìtrá
+		digitalWrite(ledFinished, HIGH);  // Zapnutí signalizace o ukonèení programu
 	}
 }
 
