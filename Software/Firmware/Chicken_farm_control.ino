@@ -94,7 +94,7 @@ bool isEditedMenuVisible = true;  // Je editované menu viditelné?
 
 #pragma endregion
 
-#pragma region Hlavní program
+#pragma region Hlavní program - Volání jednotlivých funkcí
 // TODO: Displej se nepøekresluje, pouze vìci pøepisujeme. Bylo by dobré statické texty vykreslit pouze jednou.
 
 /* Nastavení pøed prvním spuštìním */
@@ -128,7 +128,7 @@ void loop() {
 
 #pragma endregion
 
-#pragma region Measure
+#pragma region Mìøení - Teploty a vlhkosti
 
 /* Zmìø aktuální hodnoty */
 void measure() {
@@ -137,12 +137,12 @@ void measure() {
 	if (editedMenu != menuNotSelected) return;
 
 	// Mìøení aktuálních hodnot
-	hygrometer.measure();
+	hygrometer.measure();  // Zmìøí všechny hodnoty, které se pak v kodu vyèítají
 }
 
 #pragma endregion
 
-#pragma region Read Button
+#pragma region Editace - Pohyb v editaèním menu pomocí tlaèítka
 
 /* Pohyb v editaèním menu */
 void checkForMenuEdit() {
@@ -184,7 +184,7 @@ void checkForMenuEdit() {
 
 #pragma endregion
 
-#pragma region Show Menu
+#pragma region Menu - Vykreslení menu na displej
 
 /* Vykreslení menu */
 void showMenu() {
@@ -382,7 +382,7 @@ void lcdPrint(int column, int row, char value) {
 
 #pragma endregion
 
-#pragma region Control
+#pragma region Výstup - Ovládání periferií na základì mìøení
 
 /* Ovládání periferií na základì mìøení */
 void control() {
