@@ -335,8 +335,19 @@ float readHumidity() {
 
 /* Vrátí poèet dní od startu programu */
 int getDaysFromStart() {
-	// TODO: Value is not actually days from start, but something like minutes, need to be changed...
-	return (millis() / 1000 * 43200) / 84400;
+	// Jeden den má 86 400 000 ms
+	millis() / 86400000;
+
+	// Podrobná verze
+	/*
+	return (  
+		millis()  // Poèet ms od startu procesoru
+		/ 1000  // Pøevod na vteøiny (vteøina má 1000 ms)
+		/ 60  // Pøevod na minuty (minuta má 60 vteøin)
+		/ 60  // Pøevod na hodiny (hodina má 60 minut)
+		/ 24  // Pøevod na dny (den má 24 hodin)
+	);
+	*/
 }
 
 /* Pøeète hodnotu z encoderu a vrací hodnotu posunu */
