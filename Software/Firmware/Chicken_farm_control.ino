@@ -7,21 +7,24 @@
 
 /* Nastavení pøeddefinovanıch hodnot */
 
-int setTemperature = 38;
-int setHumidity = 80;
-int setDays = 23;
+int setTemperature = 38;  // Ideální teplota
+int setHumidity = 80;  // Ideální vlhkost
+int setDays = 23;  // Maximální poèet dní, které mùe zaøízení bìet
 
-/* Nastavení periferií */
+/* Nastavení pinù periferií */
 
-#define button 2
-#define heater 13
-#define fan 10
+#define button 2  // Tlaèítko pro ovládání menu
+#define heater 13  // Topení pro ohøívání kurníku
+#define fan 10  // Vìtrák pro ochlazování kurníku
 
 /* Nastavení displeje */
 
 LiquidCrystal lcd(A0, A1, A2, 5, A3, 4);  // Piny displeje
 #define lcdColumns 20  // Poèet sloupcù
 #define lcdRows 4  // Poèet øádkù
+
+/* Nastavení menu displeje */
+
 #define rowHeader 0  // Pozice hlavièky textu na displeji
 #define rowOne 1  // Pozice prvního øádku na displeji
 #define rowTwo 2  // Pozice druhého øádku na displeji
@@ -57,7 +60,7 @@ byte lineDesign[8] = {
 };
 #pragma endregion
 
-/* Nastavení encoderu */
+/* Nastavení encoderu pro nastavování hodnot v menu (digitálním potenciometrem) */
 
 #define encoderPinA 9  // Pin encoderu A
 #define encoderPinB 3  // Pin encoderu B
@@ -69,19 +72,19 @@ int encoderCurrentValue = LOW;  // Aktuální hodnota encoderu
 
 AM2320 hygrometer;
 
-/* Nastavení blikání */
+/* Nastavení blikání právì upravovanıch hodnot */
 
-#define blinkInterval 200  // Blink in milliseconds
+#define blinkInterval 200  // Interval bliknutí v milisekundách
 
 unsigned long previousMillis = 0;  // Pøedchozí poèet milisekund
 unsigned long currentMillis;  // Aktuální poèet milisekund
 
-/* Nastavení editace menu */
+/* Nastavení editaèního menu */
 
 #define menuNotSelected -1  // ádné menu nevybráno
-#define menuTemperature 0  // Èíslo menu
-#define menuHumidity 1  // Èíslo menu
-#define menuDays 2  // Èíslo menu
+#define menuTemperature 0  // Èíslo menu teploty
+#define menuHumidity 1  // Èíslo menu vlhkosti
+#define menuDays 2  // Èíslo menu poètu dnù
 
 int editedMenu = menuNotSelected;  // Aktuálnì nastavované menu
 int lastButtonState = LOW;  // Poslední stav tlaèítka
