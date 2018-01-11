@@ -102,6 +102,7 @@ unsigned long currentMillis;  // Aktuální poèet milisekund
 int editedMenu = menuNotSelected;  // Aktuálnì nastavované menu
 int lastButtonState = LOW;  // Poslední stav tlaèítka
 int currentButtonState;  // Aktuální stav tlaèítka
+int lastDaysFromStart = 0;  // Statická hodnota posledního èasu, zobrazujícího se pøi editaci
 char emptyValue[] = "  ";  // Prázdná hodnota pøi blikání
 bool isEditedMenuVisible = true;  // Je editované menu viditelné?
 
@@ -242,7 +243,7 @@ void printTemperature() {
 	lcdPrint(positionActualValue, rowOne, readTemperature());  // Namìøená hodnota
 	lcdPrint(positionUnit, rowOne, (char)0);  // Znak stupnì celsia
 
-											  // Pøednastavená hodnota
+	// Pøednastavená hodnota
 	if (editedMenu != menuTemperature) {  // Pokud toto menu není zrovna editováno
 		lcdPrint(positionSetValue, rowOne, setTemperature);  // Pøednastavená hodnota
 		return;  // Konec vykreslení
@@ -280,7 +281,7 @@ void printHumidity() {
 	lcdPrint(positionActualValue, rowTwo, readHumidity());  // Namìøená hodnota
 	lcdPrint(positionUnit, rowTwo, "%");  // Znak procent
 
-										  // Pøednastavená hodnota
+	// Pøednastavená hodnota
 	if (editedMenu != menuHumidity) {  // Pokud toto menu není zrovna editováno
 		lcdPrint(positionSetValue, rowTwo, setHumidity);  // Pøednastavená hodnota
 		return;  // Konec vykreslení
@@ -317,10 +318,17 @@ void printDays() {
 	lcdPrint(positionText, rowThree, "DAYS");
 
 	// Poèetní dní od zapnutí
-	if (setDays < 10) lcdPrint(positionActualValue + 1, rowThree, getDaysFromStart());  // Jednotky
-	else lcdPrint(positionActualValue, rowThree, getDaysFromStart());  // Desítky
+	if (editedMenu != menuDays) {  // Pokud toto menu není zrovna editováno
+		if (setDays < 10) lcdPrint(positionActualValue + 1, rowThree, getDaysFromStart());  // Jednotky
+		else lcdPrint(positionActualValue, rowThree, getDaysFromStart());  // Desítky
+	}
+	else {
+		if (setDays < 10) lcdPrint(positionActualValue + 1, rowThree, lastDaysFromStart);  // Jednotky
+		else lcdPrint(positionActualValue, rowThree, lastDaysFromStart);  // Desítky
+	}
+	
 
-																	   // Nastavený poèet dní
+	// Nastavený poèet dní
 	if (editedMenu != menuDays) {  // Pokud toto menu není zrovna editováno
 		if (setDays < 10) lcdPrint(positionSetValue + 1, rowThree, setDays);  // Jednotky
 		else lcdPrint(positionSetValue, rowThree, setDays);  // Desítky
@@ -365,11 +373,11 @@ float readHumidity() {
 /* Vrátí poèet dní od startu programu */
 int getDaysFromStart() {
 	// Jeden den má 86 400 000 ms
-	millis() / 86400000;
+	return lastDaysFromStart = millis() / 86400000;
 
 	// Podrobná verze
 	/*
-	return (  
+	return lastDaysFromStart = (  
 		millis()  // Poèet ms od startu procesoru
 		/ 1000  // Pøevod na vteøiny (vteøina má 1000 ms)
 		/ 60  // Pøevod na minuty (minuta má 60 vteøin)
