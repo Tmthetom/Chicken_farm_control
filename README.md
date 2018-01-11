@@ -5,3 +5,4 @@
 * Edit settings with LCD and button
 * Measuring room temperature and humidity
 * Automatic room temperature and humidity regulation
+* Finished work signalisation
